@@ -1,0 +1,25 @@
+{
+  "name": "@far2048/contracts",
+  "version": "1.0.0",
+  "description": "Smart contracts for FAR2048 betting system",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:base-testnet": "hardhat run scripts/deploy.js --network baseSepolia",
+    "deploy:arbitrum-testnet": "hardhat run scripts/deploy.js --network arbitrumSepolia",
+    "deploy:base": "hardhat run scripts/deploy.js --network base",
+    "deploy:arbitrum": "hardhat run scripts/deploy.js --network arbitrum",
+    "verify:base": "hardhat verify --network base",
+    "verify:arbitrum": "hardhat verify --network arbitrum"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@openzeppelin/hardhat-upgrades": "^3.0.0",
+    "hardhat": "^2.19.5"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.1",
+    "dotenv": "^16.4.1"
+  }
+}
+
