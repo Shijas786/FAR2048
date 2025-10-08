@@ -18,22 +18,12 @@ import { useGameStore } from '@/lib/store'
 import { MatchCard } from './MatchCard'
 import { CreateMatchModal } from './CreateMatchModal'
 import { JoinByCodeModal } from './JoinByCodeModal'
-import { usePrivy } from '@privy-io/react-auth'
 
 export function Lobby() {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showJoinModal, setShowJoinModal] = useState(false)
   const [selectedChain, setSelectedChain] = useState<'base' | 'arbitrum'>('base')
-  const { user, setUser, setActiveMatch, setCurrentView } = useGameStore()
-  
-  // Make Privy optional - use try/catch to handle when Privy isn't configured
-  let privyData = { ready: true, authenticated: false, user: null }
-  try {
-    privyData = usePrivy()
-  } catch (e) {
-    // Privy not configured, use defaults
-  }
-  const { ready, authenticated, user: privyUser } = privyData
+  const { user, setActiveMatch, setCurrentView } = useGameStore()
 
   // Fetch matches
   const { data: matchesData, refetch: refetchMatches } = useQuery({
