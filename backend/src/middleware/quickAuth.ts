@@ -34,65 +34,56 @@ declare global {
 
 /**
  * Middleware to verify Quick Auth JWT token
- * Expects: Authorization: Bearer <token>
+ * Standalone mode: Uses simple user ID from header
  */
 export async function quickAuthMiddleware(
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
-  if (!quickAuthClient) {
-    console.error('❌ Quick Auth not initialized - authentication required');
-    res.status(503).json({ 
-      error: 'Authentication service unavailable',
-      message: 'Quick Auth is not properly configured on the server'
-    });
+  // Standalone mode - use X-User-ID header
+  const userId = req.headers['x-user-id'] as string;
+  
+  if (userId) {
+    // Extract FID from user ID
+    const fidMatch = userId.match(/user-(\d+)/);
+    const fid = fidMatch ? parseInt(fidMatch[1]) % 1000000 : Math.floor(Math.random() * 1000000);
+    
+    req.user = { fid };
+    console.log(`✅ Standalone user authenticated: FID ${fid}`);
+    next();
     return;
   }
 
-  try {
-    // Extract token from Authorization header
-    const authHeader = req.headers.authorization;
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      res.status(401).json({ 
-        error: 'Authentication required',
-        message: 'Missing or invalid authorization header'
-      });
-      return;
+  // Try Quick Auth if available
+  if (quickAuthClient) {
+    try {
+      const authHeader = req.headers.authorization;
+      
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        const token = authHeader.split(' ')[1];
+        const payload = await quickAuthClient.verifyJwt({
+          token,
+          domain: process.env.HOSTNAME || 'localhost:3001',
+        });
+
+        req.user = {
+          fid: payload.sub,
+        };
+
+        console.log(`✅ Authenticated user FID: ${payload.sub}`);
+        next();
+        return;
+      }
+    } catch (error) {
+      console.warn('Quick Auth verification failed, using anonymous');
     }
-
-    const token = authHeader.split(' ')[1];
-
-    // Verify JWT with Quick Auth client
-    const payload = await quickAuthClient.verifyJwt({
-      token,
-      domain: process.env.HOSTNAME || 'localhost:3001',
-    });
-
-    // Attach user info to request
-    req.user = {
-      fid: payload.sub, // FID is in the 'sub' field
-    };
-
-    console.log(`✅ Authenticated user FID: ${payload.sub}`);
-    next();
-  } catch (error) {
-    if (Errors && error instanceof Errors.InvalidTokenError) {
-      console.warn('Invalid Quick Auth token:', error.message);
-      res.status(401).json({ 
-        error: 'Invalid token',
-        message: 'Authentication token is invalid or expired'
-      });
-      return;
-    }
-
-    console.error('Quick Auth middleware error:', error);
-    res.status(500).json({ 
-      error: 'Authentication failed',
-      message: 'Failed to verify authentication token'
-    });
   }
+
+  // Fallback to anonymous user
+  req.user = { fid: Math.floor(Math.random() * 1000000) };
+  console.log(`✅ Anonymous user: FID ${req.user.fid}`);
+  next();
 }
 
 /**
