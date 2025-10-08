@@ -75,7 +75,7 @@ type ChainName = keyof typeof CHAINS;
 /**
  * Get public client for reading blockchain data
  */
-export function getPublicClient(chain: ChainName): ReturnType<typeof createPublicClient> {
+export function getPublicClient(chain: ChainName): any {
   const chainConfig = CHAINS[chain];
   const rpcUrl = getRpcUrl(chain);
 
@@ -88,7 +88,7 @@ export function getPublicClient(chain: ChainName): ReturnType<typeof createPubli
 /**
  * Get wallet client for writing to blockchain (owner operations)
  */
-export function getWalletClient(chain: ChainName): ReturnType<typeof createWalletClient> {
+export function getWalletClient(chain: ChainName): any {
   const chainConfig = CHAINS[chain];
   const rpcUrl = getRpcUrl(chain);
   const privateKey = process.env.PRIVATE_KEY as `0x${string}`;
@@ -162,7 +162,8 @@ export async function declareWinnerOnChain(
     abi: FAR2048_ABI,
     functionName: 'declareWinner',
     args: [contractMatchId, winnerAddress],
-  });
+    chain: CHAINS[chain],
+  } as any);
 
   console.log(`✅ Winner declared on ${chain}:`, hash);
   return hash;
