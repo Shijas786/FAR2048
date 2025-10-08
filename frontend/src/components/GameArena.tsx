@@ -91,16 +91,16 @@ export function GameArena() {
     if (!gameStarted || activeMatch?.status !== 'in_progress') return
 
     const interval = setInterval(() => {
-      setRemainingTime((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval)
-          console.log('⏰ Time up! Match ended')
-          // Trigger game over
-          setCurrentView('results')
-          return 0
-        }
-        return prev - 1
-      })
+      const currentTime = useGameStore.getState().remainingTime
+      if (currentTime <= 1) {
+        clearInterval(interval)
+        console.log('⏰ Time up! Match ended')
+        // Trigger game over
+        setCurrentView('results')
+        setRemainingTime(0)
+      } else {
+        setRemainingTime(currentTime - 1)
+      }
     }, 1000)
 
     return () => clearInterval(interval)

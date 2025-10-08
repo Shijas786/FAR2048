@@ -1,31 +1,30 @@
 /**
  * API Client
  * 
- * Handles HTTP requests to backend with Quick Auth
+ * Handles HTTP requests to backend (Standalone version)
  */
-
-import { sdk } from '@farcaster/miniapp-sdk'
 
 const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001'
 
 /**
- * Make authenticated API request using Quick Auth
- * Requires Farcaster authentication
+ * Make authenticated API request
+ * Uses simple authentication for standalone version
  */
 async function authenticatedFetch(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<Response> {
-  if (!sdk?.quickAuth?.fetch) {
-    throw new Error('Quick Auth not available. Please open this app through Farcaster.')
-  }
+  // Get user ID from localStorage
+  const userId = localStorage.getItem('far2048-user-id') || 'anonymous'
   
-  try {
-    return await sdk.quickAuth.fetch(`${API_BASE}${endpoint}`, options)
-  } catch (error) {
-    console.error('Quick Auth fetch error:', error)
-    throw new Error('Authentication failed. Please try again.')
-  }
+  return fetch(`${API_BASE}${endpoint}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      'X-User-ID': userId,
+      ...options.headers,
+    },
+  })
 }
 
 /**
