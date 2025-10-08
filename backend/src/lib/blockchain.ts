@@ -75,7 +75,7 @@ type ChainName = keyof typeof CHAINS;
 /**
  * Get public client for reading blockchain data
  */
-export function getPublicClient(chain: ChainName) {
+export function getPublicClient(chain: ChainName): ReturnType<typeof createPublicClient> {
   const chainConfig = CHAINS[chain];
   const rpcUrl = getRpcUrl(chain);
 
@@ -88,7 +88,7 @@ export function getPublicClient(chain: ChainName) {
 /**
  * Get wallet client for writing to blockchain (owner operations)
  */
-export function getWalletClient(chain: ChainName) {
+export function getWalletClient(chain: ChainName): ReturnType<typeof createWalletClient> {
   const chainConfig = CHAINS[chain];
   const rpcUrl = getRpcUrl(chain);
   const privateKey = process.env.PRIVATE_KEY as `0x${string}`;

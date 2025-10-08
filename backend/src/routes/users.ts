@@ -126,7 +126,7 @@ router.get('/:fid/stats', async (req: Request, res: Response, next) => {
     // Calculate average score
     const avgScore =
       recentMatches && recentMatches.length > 0
-        ? recentMatches.reduce((sum, m) => sum + (m.score || 0), 0) / recentMatches.length
+        ? recentMatches.reduce((sum: number, m: any) => sum + (m.score || 0), 0) / recentMatches.length
         : 0;
 
     // Calculate win rate

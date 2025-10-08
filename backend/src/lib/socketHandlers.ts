@@ -112,7 +112,7 @@ export function setupSocketHandlers(io: SocketIOServer) {
           .select('is_ready')
           .eq('match_id', matchId);
 
-        const allReady = players?.every((p) => p.is_ready);
+        const allReady = players?.every((p: any) => p.is_ready);
 
         if (allReady && players && players.length >= 2) {
           // Start match countdown
@@ -245,7 +245,7 @@ async function startMatchTimer(io: SocketIOServer, matchId: string, durationMs: 
       }
 
       // Winner is player with highest tile, then highest score
-      const winner = players.reduce((prev, current) => {
+      const winner = players.reduce((prev: any, current: any) => {
         if (current.highest_tile > prev.highest_tile) return current;
         if (current.highest_tile === prev.highest_tile && current.score > prev.score) return current;
         return prev;
@@ -283,7 +283,7 @@ async function startMatchTimer(io: SocketIOServer, matchId: string, durationMs: 
         winnerFid: winner.fid,
         winnerScore: winner.score,
         winnerTile: winner.highest_tile,
-        players: players.map((p) => ({
+        players: players.map((p: any) => ({
           fid: p.fid,
           score: p.score,
           highestTile: p.highest_tile,

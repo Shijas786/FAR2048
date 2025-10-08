@@ -31,9 +31,14 @@ const app = express();
 const httpServer = createServer(app);
 
 // Initialize Socket.IO with CORS
+const socketOrigins = ['http://localhost:3000', 'https://far-2048.vercel.app'];
+if (process.env.FRONTEND_URL) {
+  socketOrigins.push(process.env.FRONTEND_URL);
+}
+
 const io = new SocketIOServer(httpServer, {
   cors: {
-    origin: ['http://localhost:3000', 'https://far-2048.vercel.app', process.env.FRONTEND_URL].filter(Boolean),
+    origin: socketOrigins,
     methods: ['GET', 'POST'],
     credentials: true,
   },

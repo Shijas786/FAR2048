@@ -534,7 +534,7 @@ router.post('/:id/approve', quickAuthMiddleware, async (req: Request, res: Respo
 
     if (playersError) throw playersError;
 
-    const allApproved = players?.every((p) => p.has_approved) ?? false;
+    const allApproved = players?.every((p: any) => p.has_approved) ?? false;
     const allPlayersJoined = match.current_players === match.max_players;
 
     // Update match status if all players approved and room is full
