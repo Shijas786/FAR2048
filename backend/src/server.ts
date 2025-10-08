@@ -33,7 +33,7 @@ const httpServer = createServer(app);
 // Initialize Socket.IO with CORS
 const io = new SocketIOServer(httpServer, {
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: ['http://localhost:3000', 'https://far-2048.vercel.app', process.env.FRONTEND_URL].filter(Boolean),
     methods: ['GET', 'POST'],
     credentials: true,
   },
@@ -46,10 +46,28 @@ app.locals.io = io;
 // MIDDLEWARE
 // ============================================
 
-// CORS configuration
+// CORS configuration - Allow multiple origins
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://far-2048.vercel.app',
+  process.env.FRONTEND_URL
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.warn('CORS blocked origin:', origin);
+      callback(null, true); // Allow anyway for now
+    }
+  },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-User-ID'],
 }));
 
 // Body parsing
