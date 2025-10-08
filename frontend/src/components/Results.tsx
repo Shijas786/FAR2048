@@ -150,19 +150,7 @@ export function Results() {
           </div>
         </motion.div>
 
-        {/* Match Summary */}
-        {activeMatch.match_summary && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
-            className="glass p-4 rounded-xl mb-6"
-          >
-            <p className="text-sm text-gray-300 italic">
-              "{activeMatch.match_summary}"
-            </p>
-          </motion.div>
-        )}
+        {/* Match Summary - Disabled for now */}
 
         {/* Actions */}
         <motion.div
